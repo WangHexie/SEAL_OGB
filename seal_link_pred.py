@@ -34,6 +34,50 @@ from utils import *
 from models import *
 
 
+def create_dataset(number_of_nodes):
+    number_of_a = number_of_nodes
+    number_of_b = number_of_nodes
+    a_nodes = list(range(number_of_a))
+    b_nodes = list(range(number_of_a, number_of_a+number_of_b))
+
+    edges = []
+    for a in a_nodes:
+      bs = np.random.choice(b_nodes, np.random.randint(int(number_of_b/2), number_of_b), replace=False)
+      for b in bs:
+        edges.append([a, b])
+        edges.append([b, a])
+
+
+    adj = np.zeros((number_of_a+number_of_b, number_of_a+number_of_b))
+
+    edges_t = np.array(edges).T
+    adj[edges_t[0], edges_t[1]] = 1
+    
+    print(adj)
+    
+    number_of_test_edges = number_of_nodes
+    pos_edges = []
+    neg_edges = np.random.choice(range(number_of_a), (number_of_test_edges, 2))
+
+
+    for i in range(number_of_a):
+      for j in range(number_of_a, len(adj)):
+        if adj[i,j] == 0:
+          pos_edges.append([i, j])
+    
+    pos_edges = pos_edges[number_of_test_edges]
+    pos_e_t = np.array(pos_edges).T
+    print(neg_e_t)
+    print(adj[pos_e_t[0], pos_e_t[1]])
+    
+    
+    split_edge = {"train":{"edge":},
+                  "valid":{"edge":, "edge_neg":},
+                  "test": {"edge":, "edge_neg":}}
+    
+    split_edge = 
+
+
 class SEALDataset(InMemoryDataset):
     def __init__(self, root, data, split_edge, num_hops, percent=100, split='train', 
                  use_coalesce=False, node_label='drnl', ratio_per_hop=1.0, 
