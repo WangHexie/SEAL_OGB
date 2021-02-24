@@ -55,7 +55,7 @@ def create_dataset(number_of_nodes):
     
     print(adj)
     
-    number_of_test_edges = number_of_nodes
+    number_of_test_edges = int(number_of_nodes^1.5)
     pos_edges = []
     neg_edges = np.random.choice(range(number_of_a), (number_of_test_edges, 2))
 
