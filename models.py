@@ -185,11 +185,11 @@ class DGCNN(torch.nn.Module):
         self.lin2 = Linear(128, 1)
 
     def forward(self, z, edge_index, batch, x=None, edge_weight=None, node_id=None):
-        print(z.shape)
-        print(x.shape)
+#         print(z.shape)
+#         print(x.shape)
         
-        print("z:", z)
-        print("x:", x)
+#         print("z:", z)
+#         print("x:", x)
         z_emb = self.z_embedding(z)
         if z_emb.ndim == 3:  # in case z has multiple integer labels
             z_emb = z_emb.sum(dim=1)
