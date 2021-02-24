@@ -55,7 +55,7 @@ def create_dataset(number_of_nodes):
     
     print(adj)
     
-    number_of_test_edges = int(number_of_nodes^1.5)
+    number_of_test_edges = int(number_of_nodes**1.5)
     pos_edges = []
     neg_edges = np.random.choice(range(number_of_a), (number_of_test_edges, 2))
 
@@ -242,6 +242,9 @@ def test():
     val_pred, val_true = torch.cat(y_pred), torch.cat(y_true)
     pos_val_pred = val_pred[val_true==1]
     neg_val_pred = val_pred[val_true==0]
+    
+    print("pos_pred:", pos_val_pred)
+    print("neg_val_pred:", neg_val_pred)
 
     y_pred, y_true = [], []
     for data in tqdm(test_loader, ncols=70):
