@@ -78,8 +78,16 @@ def create_dataset(number_of_nodes):
     import torch
     
     valid_pos, test_pos, valid_neg, test_neg = train_test_split(pos_edges, neg_edges, test_size=test_percentage)
+    import random
+    
+    test_values = test_pos+test_neg
+    
+    random.shuffle(test_values)
+    
+    test_pos, test_neg = test_values[:int(len(test_values)/2)], test_values[int(len(test_values)/2):]
+
     split_edge = {"train":{"edge":torch.tensor(edges, dtype=torch.long)},
-                  "valid":{"edge":torch.tensor(valid_pos, dtype=torch.long), "edge_neg":torch.tensor(valid_neg, dtype=torch.long)},
+                  "valid":{"edge":torch.tensor(valid_neg, dtype=torch.long), "edge_neg":torch.tensor(valid_pos, dtype=torch.long)},
                   "test": {"edge":torch.tensor(test_pos, dtype=torch.long), "edge_neg":torch.tensor(test_neg, dtype=torch.long)}}
 
     edge_index = torch.tensor([[0, 1, 1, 2],
