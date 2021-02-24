@@ -721,9 +721,8 @@ for run in range(args.runs):
         exit()
 
     # Training starts
+    loss = 0
     for epoch in range(start_epoch, start_epoch + args.epochs):
-        loss = train()
-
         if epoch % args.eval_steps == 0:
             results = test()
             for key, result in results.items():
@@ -747,7 +746,10 @@ for run in range(args.runs):
                     with open(log_file, 'a') as f:
                         print(key, file=f)
                         print(to_print, file=f)
+        
+        loss = train()
 
+       
     for key in loggers.keys():
         print(key)
         loggers[key].print_statistics(run)
