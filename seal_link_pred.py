@@ -65,18 +65,30 @@ def create_dataset(number_of_nodes):
         if adj[i,j] == 0:
           pos_edges.append([i, j])
     
-    pos_edges = pos_edges[number_of_test_edges]
+    pos_edges = np.array(pos_edges[:number_of_test_edges])
     pos_e_t = np.array(pos_edges).T
     print(neg_e_t)
     print(adj[pos_e_t[0], pos_e_t[1]])
     
     
-    split_edge = {"train":{"edge":},
-                  "valid":{"edge":, "edge_neg":},
-                  "test": {"edge":, "edge_neg":}}
-    
-    split_edge = 
 
+    test_percentage = 0.5
+    
+    from sklearn.model_selection import train_test_split
+    
+    valid_pos, test_pos, valid_neg, test_neg = train_test_split(pos_edges, neg_edges, test_size=test_percentage)
+    split_edge = {"train":{"edge":np.array(edges)},
+                  "valid":{"edge":valid_pos, "edge_neg":valid_neg},
+                  "test": {"edge":test_pos, "edge_neg":test_neg}}
+    
+    from torch_geometric.data import Data
+    import torch
+    edge_index = torch.tensor([[0, 1, 1, 2],
+                               [1, 0, 2, 1]], dtype=torch.long)
+    x = torch.tensor([[-1], [0], [1]], dtype=torch.float)
+
+    data = Data(x=torch.tensor(np.ones(number_of_a+number_of_b), dtype=torch.float), num_nodes=number_of_a+number_of_b, split_edge=split_edge)
+    return data
 
 class SEALDataset(InMemoryDataset):
     def __init__(self, root, data, split_edge, num_hops, percent=100, split='train', 
@@ -389,6 +401,7 @@ parser.add_argument('--pretrained_node_embedding', type=str, default=None,
 parser.add_argument('--use_valedges_as_input', action='store_true')
 parser.add_argument('--eval_steps', type=int, default=1)
 parser.add_argument('--log_steps', type=int, default=1)
+parser.add_argument('--num_of_data', type=int, default=1000)
 parser.add_argument('--data_appendix', type=str, default='', 
                     help="an appendix to the data directory")
 parser.add_argument('--save_appendix', type=str, default='', 
@@ -436,6 +449,10 @@ if args.dataset.startswith('ogbl'):
     dataset = PygLinkPropPredDataset(name=args.dataset)
     split_edge = dataset.get_edge_split()
     data = dataset[0]
+elif args.dataset=="test":
+    data = create_dataset(args.num_of_data)
+    split_edge = data.split_edge
+
 else:
     path = osp.join('dataset', args.dataset)
     dataset = Planetoid(path, args.dataset)
@@ -447,6 +464,9 @@ if args.dataset.startswith('ogbl-citation'):
     args.eval_metric = 'mrr'
     directed = True
 elif args.dataset.startswith('ogbl'):
+    args.eval_metric = 'hits'
+    directed = False
+elif args.dataset=="test":
     args.eval_metric = 'hits'
     directed = False
 else:  # assume other datasets are undirected
@@ -463,6 +483,9 @@ if args.use_valedges_as_input:
 
 if args.dataset.startswith('ogbl'):
     evaluator = Evaluator(name=args.dataset)
+elif args.dataset=="test":
+    evaluator = Evaluator(name='ogbl-ppa')
+
 if args.eval_metric == 'hits':
     loggers = {
         'Hits@20': Logger(args.runs, args),
