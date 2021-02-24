@@ -67,10 +67,7 @@ def create_dataset(number_of_nodes):
     
     pos_edges = np.array(pos_edges[:number_of_test_edges])
     pos_e_t = np.array(pos_edges).T
-    print(neg_e_t)
     print(adj[pos_e_t[0], pos_e_t[1]])
-    
-    
 
     test_percentage = 0.5
     
