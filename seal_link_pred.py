@@ -548,7 +548,7 @@ if args.use_heuristic:
 
 
 # SEAL.
-path = dataset.root + '_seal{}'.format(args.data_appendix)
+path = "./" + '_seal{}'.format(args.data_appendix)
 use_coalesce = True if args.dataset == 'ogbl-collab' else False
 
 dataset_class = 'SEALDynamicDataset' if args.dynamic_train else 'SEALDataset'
