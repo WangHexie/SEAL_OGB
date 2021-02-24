@@ -86,7 +86,7 @@ def create_dataset(number_of_nodes):
                                [1, 0, 2, 1]], dtype=torch.long)
     x = torch.tensor([[-1], [0], [1]], dtype=torch.float)
 
-    data = Data(x=torch.tensor(np.ones(number_of_a+number_of_b), dtype=torch.float), num_nodes=number_of_a+number_of_b, split_edge=split_edge, edge_index=torch.tensor(edges, dtype=torch.long).t())
+    data = Data(x=torch.tensor([[0]]*(number_of_a+number_of_b), dtype=torch.float), num_nodes=number_of_a+number_of_b, split_edge=split_edge, edge_index=torch.tensor(edges, dtype=torch.long).t())
     return data
 
 class SEALDataset(InMemoryDataset):
