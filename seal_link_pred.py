@@ -73,13 +73,15 @@ def create_dataset(number_of_nodes):
     
     from sklearn.model_selection import train_test_split
     
+        
+    from torch_geometric.data import Data
+    import torch
+    
     valid_pos, test_pos, valid_neg, test_neg = train_test_split(pos_edges, neg_edges, test_size=test_percentage)
     split_edge = {"train":{"edge":torch.tensor(edges, dtype=torch.long)},
                   "valid":{"edge":torch.tensor(valid_pos, dtype=torch.long), "edge_neg":torch.tensor(valid_neg, dtype=torch.long)},
                   "test": {"edge":torch.tensor(test_pos, dtype=torch.long), "edge_neg":torch.tensor(test_neg, dtype=torch.long)}}
-    
-    from torch_geometric.data import Data
-    import torch
+
     edge_index = torch.tensor([[0, 1, 1, 2],
                                [1, 0, 2, 1]], dtype=torch.long)
     x = torch.tensor([[-1], [0], [1]], dtype=torch.float)
