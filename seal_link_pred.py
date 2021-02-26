@@ -34,7 +34,7 @@ from utils import *
 from models import *
 
 
-def create_dataset_111(number_of_nodes):
+def create_dataset_wrong_test_set(number_of_nodes):
     number_of_a = number_of_nodes
     number_of_b = number_of_nodes
     a_nodes = list(range(number_of_a))
@@ -81,7 +81,7 @@ def create_dataset_111(number_of_nodes):
     import random
     
     test_values = test_pos+test_neg
-    
+    #wrong test set
     random.shuffle(test_values)
     
     test_pos, test_neg = test_values[:int(len(test_values)/2)], test_values[int(len(test_values)/2):]
@@ -97,7 +97,63 @@ def create_dataset_111(number_of_nodes):
     data = Data(x=torch.tensor([[0]]*(number_of_a+number_of_b), dtype=torch.float), num_nodes=number_of_a+number_of_b, split_edge=split_edge, edge_index=torch.tensor(edges, dtype=torch.long).t())
     return data
 
+
 def create_dataset(number_of_nodes):
+    number_of_a = number_of_nodes
+    number_of_b = number_of_nodes
+    a_nodes = list(range(number_of_a))
+    b_nodes = list(range(number_of_a, number_of_a+number_of_b))
+
+    edges = []
+    for a in a_nodes:
+      bs = np.random.choice(b_nodes, np.random.randint(int(number_of_b/2), number_of_b), replace=False)
+      for b in bs:
+        edges.append([a, b])
+        edges.append([b, a])
+
+
+    adj = np.zeros((number_of_a+number_of_b, number_of_a+number_of_b))
+
+    edges_t = np.array(edges).T
+    adj[edges_t[0], edges_t[1]] = 1
+    
+    print(adj)
+    
+    number_of_test_edges = number_of_nodes
+    pos_edges = []
+    neg_edges = np.random.choice(range(number_of_a), (number_of_test_edges, 2))
+
+
+    for i in range(number_of_a):
+      for j in range(number_of_a, len(adj)):
+        if adj[i,j] == 0:
+          pos_edges.append([i, j])
+    
+    pos_edges = np.array(pos_edges[:number_of_test_edges])
+    pos_e_t = np.array(pos_edges).T
+    print(adj[pos_e_t[0], pos_e_t[1]])
+
+    test_percentage = 0.5
+    
+    from sklearn.model_selection import train_test_split
+    
+        
+    from torch_geometric.data import Data
+    import torch
+    
+    valid_pos, test_pos, valid_neg, test_neg = train_test_split(pos_edges, neg_edges, test_size=test_percentage)
+    split_edge = {"train":{"edge":torch.tensor(edges, dtype=torch.long)},
+                  "valid":{"edge":torch.tensor(valid_pos, dtype=torch.long), "edge_neg":torch.tensor(valid_neg, dtype=torch.long)},
+                  "test": {"edge":torch.tensor(test_pos, dtype=torch.long), "edge_neg":torch.tensor(test_neg, dtype=torch.long)}}
+
+    edge_index = torch.tensor([[0, 1, 1, 2],
+                               [1, 0, 2, 1]], dtype=torch.long)
+    x = torch.tensor([[-1], [0], [1]], dtype=torch.float)
+
+    data = Data(x=torch.tensor([[0]]*(number_of_a+number_of_b), dtype=torch.float), num_nodes=number_of_a+number_of_b, split_edge=split_edge, edge_index=torch.tensor(edges, dtype=torch.long).t())
+    return data
+
+def create_dataset_self(number_of_nodes):
     number_of_a = number_of_nodes
     number_of_b = number_of_nodes
     number_of_self_connected = number_of_nodes
